@@ -11,7 +11,7 @@ cloudinary.config({
 
 
 exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
-    if (!req.body.image) return next();
+    if (!req.file) return next();
     const uploadResult = await new Promise((resolve) => {
         cloudinary.uploader.upload_stream((error, uploadResult) => {
             if (error) {
@@ -19,24 +19,24 @@ exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
             }
 
             return resolve(uploadResult);
-        }).end(req.body.image);
+        }).end(req.file.buffer);
     });
 
     const user = await userModel.findById(req.user.id)
     const url = user.image
+    user.image = uploadResult.secure_url
+    await user.save()
     const segments = url.split('/');
     const filenameWithExtension = segments[segments.length - 1];
     const filename = filenameWithExtension.split('.')[0]; // remove file extension
-    if (url === 'https://res.cloudinary.com/djmlypicw/image/upload/v1708617027/eqrjkezhqdivzkesyy0s.jpg')
+    if (url === 'https://res.cloudinary.com/djmlypicw/image/upload/v1709749612/pkpnjfz55dywuaakptx6.jpg')
         return next()
     try {
+        console.log(filename);
         const result = await cloudinary.uploader.destroy(filename);
-        user.image = uploadResult.secure_url
-        await user.save()
         // console.log(result);
     } catch (error) {
         console.log(error);
-        return next(new AppError(500, "Internal server error"))
     }
 
     next()
@@ -44,11 +44,11 @@ exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
 
 
 exports.postUploadToCloudinary = catchAsync(async (req, res, next) => {
-    if (!req.body.image) return next();
+    if (!req.file) return next();
     const uploadResult = await new Promise((resolve) => {
         cloudinary.uploader.upload_stream((error, uploadResult) => {
             if (error) {
-                return next(new AppError(500, "Internal server error"))
+                return next(new AppError("Internal server error", 500))
             }
 
             return resolve(uploadResult);
@@ -61,7 +61,7 @@ exports.postUploadToCloudinary = catchAsync(async (req, res, next) => {
         // console.log(result);
     } catch (error) {
         console.log(error);
-        return next(new AppError(500, "Internal server error"))
+        return next(new AppError("Internal server error", 500))
     }
 
     next()

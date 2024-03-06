@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
-  updateOne,
   getOne,
-  deleteOne,
   createOne,
 } = require("../controllers/handlerFactory");
 
@@ -30,6 +28,7 @@ const {
 } = require("../controllers/userController");
 
 const userModel = require("../models/userModel");
+const { uploadToCloudinary } = require("../utils/cloudinary");
 
 router.post("/signup", signUp);
 router.post("/login", login);
@@ -39,17 +38,14 @@ router.patch("/updatePassword", protect, updatePassword);
 
 router
   .route("/")
-  .get(protect, getAllUsers)
+  .get(protect, restriction("admin"), getAllUsers)
   .post(protect, createOne(userModel))
   .delete(protect, deleteMe)
+  .patch(protect, uploadUserImage, resizeUserImage, uploadToCloudinary, updateMe);
 
 router
   .route("/deleteUser")
-  .delete(protect, deleteUser);
-
-router.
-  route("/verify/:token").
-  get(verify)
+  .delete(protect, restriction("admin"), deleteUser);
 
 router.
   route("/search/:letter").
@@ -57,8 +53,7 @@ router.
 
 router.
   route("/verify/:token").
-  post(verify)
-
+  get(verify)
 
 router
   .route("/:id")

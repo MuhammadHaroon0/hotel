@@ -9,9 +9,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xssClean = require("xss-clean");
 const hpp = require("hpp");
 const cookieParser = require('cookie-parser')
-const passport = require("passport");
-require('./config/passport.js')
-const session = require('express-session')
+// const session = require('express-session')
 ///////////////////////////Files
 const connectDB = require('./db')
 connectDB()
@@ -25,16 +23,16 @@ app.use(cors({
   origin: process.env.FRONTEND_URL, // Replace with your frontend's URL
   credentials: true, // This allows cookies to be sent in CORS requests
 }));
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}))
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: false }
+// }))
 app.use(cookieParser())
 // Passport Middleware
-app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.initialize())
+// app.use(passport.session())
 
 app.use(helmet());
 app.use(morgan("tiny"));
@@ -71,37 +69,11 @@ app.use(
 //ROUTERS
 const userRouter = require("./routes/userRoutes.js");
 const ratingRouter = require('./routes/ratingRoutes.js')
-const googleAuthRouter = require('./config/googleauth.js')
 
 
 //ROUTES
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/ratings", ratingRouter);
-app.use("/", googleAuthRouter);
-
-// app.get('/', async (req, res, next) => {
-//   res.send("hello")
-// })
-// app.get('/api/v1', async (req, res, next) => {
-//   try {
-//     await res.sendFile(__dirname + '/index.html');
-//   } catch (error) {
-//     // Handle the error here
-//     console.log(error);
-//     next(new AppError(500, "Internal server error")); // Pass the error to the error-handling middleware
-//   }
-// });
-// app.get('/api/v1/fail', async (req, res, next) => {
-//   try {
-//     await res.send("failed");
-//   } catch (error) {
-//     // Handle the error here
-//     console.log(error);
-//     next(new AppError(500, "Internal server error")); // Pass the error to the error-handling middleware
-//   }
-// });
-
-
 
 //PREVENTING REACHING UNDEFINED ROUTES
 app.all("*", (req, res, next) => {

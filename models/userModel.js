@@ -5,9 +5,15 @@ const crypto = require("crypto");
 const saltRounds = 12;
 
 const userSchema = new mongoose.Schema({
-  name: {
+  firstName: {
     type: String,
-    required: [true, "name is required"],
+    required: [true, "first name is required"],
+    minLength: 4,
+    maxLength: 30,
+  },
+  lastName: {
+    type: String,
+    required: [true, "last name is required"],
     minLength: 4,
     maxLength: 30,
   },
@@ -35,20 +41,19 @@ const userSchema = new mongoose.Schema({
         return regex.test(value);
       },
       message:
-        "Password must contain at least one letter, one number, and one special character.",
+        "Password must contain at least one letter,,one capital letter, one number, and one special character.",
     },
   },
   accountType: {
     type: String,
-    enum: ["Fitness Enthusiast", "admin", "Fitness Professional"],
-    default: "Fitness Enthusiast",
+    enum: ["user", "admin"],
+    default: "user",
   },
 
   active: {
     type: Boolean,
     default: true,
   },
-
   approve: {
     type: Boolean,
     default: false,
@@ -60,7 +65,7 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: "default.jpg"
+    default: "https://res.cloudinary.com/djmlypicw/image/upload/v1709749612/pkpnjfz55dywuaakptx6.jpg"
   },
   verificationToken: {
     type: String,
@@ -75,7 +80,8 @@ const userSchema = new mongoose.Schema({
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  })
+  },
+)
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

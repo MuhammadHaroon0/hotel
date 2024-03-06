@@ -36,10 +36,10 @@ var fileStorage = multer.diskStorage({
 
 exports.imageMulter = multer({
   storage: multerStorage,
-  // fileFilter: multerFilter,
+  fileFilter: multerFilter,
 });
 
 exports.fileSMulter = multer({
   storage: fileStorage,
-  fileFilter: multerFilter,
+  // fileFilter: multerFilter,
 });

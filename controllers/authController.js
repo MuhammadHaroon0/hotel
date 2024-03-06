@@ -45,9 +45,11 @@ exports.login = catchAsync(async (req, res, next) => {
     .findOne({ email: req.body.email })
     .select("+password");
   if (!found) return next(new AppError("Please provide valid email!", 400));
-  console.log(found);
   if (found.authMethod === 'google') {
     return next(new AppError("You can only login with google", 403))
+  }
+  if (found.approve === false) {
+    return next(new AppError("You must verify your account first by clicking the link in your email", 403))
   }
   if (!(await found.correctPassword(req.body.password)))
     return next(new AppError("Please provide valid email and password!", 400));
@@ -68,7 +70,6 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.verify = catchAsync(async (req, res, next) => {
-  console.log(req.params.token);
   const user = await userModel.findOne({ verificationToken: req.params.token });
 
   if (!user) {
@@ -80,7 +81,7 @@ exports.verify = catchAsync(async (req, res, next) => {
   user.verificationToken = undefined; // Clear verification token
   await user.save();
 
-  res.status(200).send('Email verified successfully.');
+  res.status(200).send('<h1>Account verified successfully. You can login now!</h1>');
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
