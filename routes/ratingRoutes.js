@@ -10,8 +10,8 @@ const {
 const { ratingModel } = require("../models/ratingModel");
 
 const {
-  getUserRatings,
-  addUserRatings,
+  getHotelRatings,
+  addHotelRatings,
 } = require("../controllers/ratingController"); //get a single course ratings
 
 const { protect, restriction } = require("../controllers/authController");
@@ -19,14 +19,14 @@ const { protect, restriction } = require("../controllers/authController");
 router
   .route("/")
   .get(getAll(ratingModel))
-  .post(protect, restriction("Fitness Enthusiast"), addUserRatings);
+  .post(protect, restriction("user"), addHotelRatings);
 
-router.route("/getUserRatings/:userId").get(getUserRatings);
+router.route("/getUserRatings/:userId").get(getHotelRatings);
 
 router
   .route("/:id")
   .get(getOne(ratingModel))
-  .put(protect, restriction("Fitness Enthusiast"), updateOne(ratingModel))
-  .delete(protect, restriction("Fitness Enthusiast"), deleteOne(ratingModel));
+  .put(protect, restriction("user"), updateOne(ratingModel))
+  .delete(protect, deleteOne(ratingModel));
 
 module.exports = router;

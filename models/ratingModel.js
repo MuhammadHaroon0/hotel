@@ -12,10 +12,10 @@ const ratingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  givenTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
+  // course: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Course",
+  // },
 });
 
 //To provide efficient searching of mongodb
@@ -44,24 +44,24 @@ const ratingSchema = new mongoose.Schema({
 //   this.pipeline().unshift({ $match: {  } });
 //   next();
 // });
-ratingSchema.statics.getAvgRating = async function (userId) {
+ratingSchema.statics.getAvgRating = async function (courseId) {
   const stats = await this.aggregate([
     {
-      $match: { givenTo: userId },
+      $match: { course: courseId },
     },
     {
       $group: {
-        _id: "$givenTo",
+        _id: "$course",
         avgRating: { $avg: "$rating" },
       },
     },
   ]);
-  await courseModel.findByIdAndUpdate(userId, {
+  await courseModel.findByIdAndUpdate(courseId, {
     avgRating: stats[0].avgRating,
   });
 };
 ratingSchema.post("save", function () {
-  this.constructor.getAvgRating(this.givenTo); //updating avg rating soon after creating the document in course model
+  this.constructor.getAvgRating(this.course); //updating avg rating soon after creating the document in course model
 });
 // userSchema.methods.FUNCTIONNAME=function()
 // {

@@ -69,11 +69,15 @@ app.use(
 //ROUTERS
 const userRouter = require("./routes/userRoutes.js");
 const ratingRouter = require('./routes/ratingRoutes.js')
+const bookingRouter = require('./routes/bookingRoutes.js')
+const hotelRouter = require('./routes/hotelRoutes.js')
 
 
 //ROUTES
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/ratings", ratingRouter);
+app.use("/api/v1/bookings", bookingRouter);
+app.use("/api/v1/hotels", hotelRouter);
 
 //PREVENTING REACHING UNDEFINED ROUTES
 app.all("*", (req, res, next) => {

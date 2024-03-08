@@ -32,7 +32,6 @@ exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
     if (url === 'https://res.cloudinary.com/djmlypicw/image/upload/v1709749612/pkpnjfz55dywuaakptx6.jpg')
         return next()
     try {
-        console.log(filename);
         const result = await cloudinary.uploader.destroy(filename);
         // console.log(result);
     } catch (error) {
